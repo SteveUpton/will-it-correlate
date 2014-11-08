@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<script src="http://json-stat.org/lib/json-stat.js" type="text/javascript"></script>
+
 <script type="text/javascript" src="keys.js"></script>
 
 <style>
@@ -15,10 +17,20 @@
 </head>
 <body>
 
-  Dataset 1: <input type="text" id="dataset1-field" value="QS302EW"><br>
-  Dataset 2: <input type="text" id="dataset2-field" value="QS601EW"><br>
+  <div>
+    Dataset 1: <input type="text" id="dataset1-field" value="QS302EW">
+    <span id="category1">Category 1:</span>
+    <select id="dataset1-category"></select>
+  <div>
+  <br/>
+  <div>
+    Dataset 2: <input type="text" id="dataset2-field" value="QS601EW">
+    <span id="category2">Category 2:</span>
+    <select id="dataset2-category"></select>
+  </div>
+  <br/>
 
-  <button onclick="blah()">Click me</button>
+  <button onclick="update()">Update</button>
 
   <script type="text/javascript">
 
@@ -32,12 +44,15 @@
       return xmlHttp.responseText;
     }
 
-    function blah() {
+    function update() {
       ds1id = document.getElementById("dataset1-field").value
       ds2id = document.getElementById("dataset2-field").value
 
-      console.log(generateQueryURL(ds1id, 'K04000001'))
-      console.log(generateQueryURL(ds2id, 'K04000001'))
+      var dataset1 = JSONstat(generateQueryURL(ds1id, 'K04000001'));
+      var dataset2 = JSONstat(generateQueryURL(ds2id, 'K04000001'));
+
+      populateCategoryList(1, dataset1)
+      populateCategoryList(2, dataset2)
     }
 
     function generateQueryURL(dataset, geocode) {
@@ -52,6 +67,27 @@
       query = $.param(params);
       url = baseurl + dataset + '.json' + '?' + query
       return url
+    }
+
+    function populateCategoryList(id, dataset) {
+      categories = dataset.Dataset(0).id
+
+      for (var i = categories.length - 1; i >= 0; i--) {
+        if (!dataset.Dataset(0).Dimension(categories[i]).role) {
+          var categoryDimension = categories[i]
+        }
+      };
+
+      document.getElementById('category'+id).innerHTML = dataset.Dataset(0).Dimension(categoryDimension).label
+      options = dataset.Dataset(0).Dimension(categoryDimension).Category()
+
+      categoryDropdown = 'dataset'+id+'-category';
+      for (var i = options.length - 1; i >= 0; i--) {
+        option = document.createElement("option");
+        option.text = options[i].label;
+        option.id = i;
+        document.getElementById(categoryDropdown).add(option)
+      };
     }
 
   </script>
