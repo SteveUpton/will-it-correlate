@@ -7,6 +7,7 @@
 
 <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
 <script src="http://json-stat.org/lib/json-stat.js" type="text/javascript"></script>
+<script type="text/javascript" src="canvasjs.min.js"></script>
 
 <script type="text/javascript" src="keys.js"></script>
 
@@ -30,12 +31,22 @@
   </div>
   <br/>
 
+<!--  <div>
+    <select>
+
+    </select>
+  </div> -->
+
   <div>
     <button onclick="update()">Update</button>
     <button onclick="correlate()">Do they correlate?</button>
   </div>
 
+  <div id="chartContainer" style="width: 100%;"></div>
+
   <script type="text/javascript">
+
+    areas = ["E06000001", "E06000002", "E06000003", "E06000004", "E06000005", "E06000006", "E06000007", "E06000008", "E06000009"];
 
     baseurl = "http://data.ons.gov.uk/ons/api/data/dataset/";
 
@@ -99,7 +110,20 @@
     }
 
     function correlate() {
-
+      ds1dropdown = document.getElementById('dataset1-category');
+      ds1SelectedID = ds1dropdown.options[ ds1dropdown.selectedIndex ].id;
+      ds2dropdown = document.getElementById('dataset2-category');
+      ds2SelectedID = ds2dropdown.options[ ds2dropdown.selectedIndex ].id;
+      var dataPoints = [];
+      for (var i = areas.length - 1; i >= 0; i--) {
+        dataPoint = {};
+        areaDS1 = JSONstat(generateQueryURL(ds1id, areas[i]));
+        areaDS2 = JSONstat(generateQueryURL(ds2id, areas[i]));
+        dataPoint.x = areaDS1.Dataset( 0 ).Data( parseInt(ds1SelectedID) ).value;
+        dataPoint.y = areaDS2.Dataset( 0 ).Data( parseInt(ds2SelectedID) ).value;
+        dataPoints.push(dataPoint);
+      };
+      console.log(dataPoints);
     }
 
   </script>
