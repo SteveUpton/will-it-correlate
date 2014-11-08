@@ -30,7 +30,10 @@
   </div>
   <br/>
 
-  <button onclick="update()">Update</button>
+  <div>
+    <button onclick="update()">Update</button>
+    <button onclick="correlate()">Do they correlate?</button>
+  </div>
 
   <script type="text/javascript">
 
@@ -45,14 +48,14 @@
     }
 
     function update() {
-      ds1id = document.getElementById("dataset1-field").value
-      ds2id = document.getElementById("dataset2-field").value
+      ds1id = document.getElementById("dataset1-field").value;
+      ds2id = document.getElementById("dataset2-field").value;
 
       var dataset1 = JSONstat(generateQueryURL(ds1id, 'K04000001'));
       var dataset2 = JSONstat(generateQueryURL(ds2id, 'K04000001'));
 
-      populateCategoryList(1, dataset1)
-      populateCategoryList(2, dataset2)
+      populateCategoryList(1, dataset1);
+      populateCategoryList(2, dataset2);
     }
 
     function generateQueryURL(dataset, geocode) {
@@ -65,29 +68,38 @@
         jsontype: 'json-stat'
       }
       query = $.param(params);
-      url = baseurl + dataset + '.json' + '?' + query
-      return url
+      url = baseurl + dataset + '.json' + '?' + query;
+      return url;
     }
 
     function populateCategoryList(id, dataset) {
-      categories = dataset.Dataset(0).id
+      // The dropdown we're going to change
+      select = document.getElementById('dataset' + id + '-category');
 
+      // Clear previous options
+      $(select).empty();
+
+      // Get the list of categories
+      categories = dataset.Dataset(0).id;
       for (var i = categories.length - 1; i >= 0; i--) {
         if (!dataset.Dataset(0).Dimension(categories[i]).role) {
-          var categoryDimension = categories[i]
+          var categoryDimension = categories[i];
         }
       };
 
-      document.getElementById('category'+id).innerHTML = dataset.Dataset(0).Dimension(categoryDimension).label
-      options = dataset.Dataset(0).Dimension(categoryDimension).Category()
-
-      categoryDropdown = 'dataset'+id+'-category';
+      // Populate the dropdown with the new categories
+      document.getElementById('category'+id).innerHTML = dataset.Dataset(0).Dimension(categoryDimension).label;
+      options = dataset.Dataset(0).Dimension(categoryDimension).Category();
       for (var i = options.length - 1; i >= 0; i--) {
         option = document.createElement("option");
         option.text = options[i].label;
         option.id = i;
-        document.getElementById(categoryDropdown).add(option)
+        select.add(option);
       };
+    }
+
+    function correlate() {
+
     }
 
   </script>
