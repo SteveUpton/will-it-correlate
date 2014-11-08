@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AccHack14</title>
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="keys.js"></script>
+
+<style>
+
+</style>
+<style type="text/css"></style>
+</head>
+<body>
+
+  Dataset 1: <input type="text" id="dataset1-field" value="QS302EW"><br>
+  Dataset 2: <input type="text" id="dataset2-field" value="QS601EW"><br>
+
+  <button onclick="blah()">Click me</button>
+
+  <script type="text/javascript">
+
+    baseurl = "http://data.ons.gov.uk/ons/api/data/dataset/";
+
+    function httpGet(theUrl) {
+      var xmlHttp = null;
+      xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", theUrl, false );
+      xmlHttp.send( null );
+      return xmlHttp.responseText;
+    }
+
+    function blah() {
+      ds1id = document.getElementById("dataset1-field").value
+      ds2id = document.getElementById("dataset2-field").value
+
+      console.log(generateQueryURL(ds1id, 'K04000001'))
+      console.log(generateQueryURL(ds2id, 'K04000001'))
+    }
+
+    function generateQueryURL(dataset, geocode) {
+      var params = {
+        apikey: keys.onsapi,
+        context: 'Census',
+        geog: '2011WARDH',
+        "dm/2011WARDH": geocode,
+        totals: 'false',
+        jsontype: 'json-stat'
+      }
+      query = $.param(params);
+      url = baseurl + dataset + '.json' + '?' + query
+      return url
+    }
+
+  </script>
+
+</body>
+</html>
