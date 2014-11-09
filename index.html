@@ -19,23 +19,17 @@
 <body>
 
   <div>
-    Dataset 1: <input type="text" id="dataset1-field" value="QS302EW">
+    Dataset 1: <select id="dataset1-field"></select>
     <span id="category1">Category 1:</span>
     <select id="dataset1-category"></select>
   <div>
   <br/>
   <div>
-    Dataset 2: <input type="text" id="dataset2-field" value="QS601EW">
+    Dataset 2: <select id="dataset2-field"></select>
     <span id="category2">Category 2:</span>
     <select id="dataset2-category"></select>
   </div>
   <br/>
-
-<!--  <div>
-    <select>
-
-    </select>
-  </div> -->
 
   <div>
     <button onclick="update()">Update</button>
@@ -46,9 +40,26 @@
 
   <script type="text/javascript">
 
-    areas = ["E06000001", "E06000002", "E06000003", "E06000004", "E06000005", "E06000006", "E06000007", "E06000008", "E06000009"];
+    areas = ["E06000001", "E06000002", "E06000003", "E06000004", "E06000005", "E06000006", "E06000007", "E06000008", "E06000009", "E06000010", "E06000011", "E06000012", "E06000013"];
 
     baseurl = "http://data.ons.gov.uk/ons/api/data/dataset/";
+
+    function setup() {
+      ds1select = document.getElementById('dataset1-field');
+      ds2select = document.getElementById('dataset2-field');
+      datasets = ['QS302EW', 'QS601EW', 'QS101EW','QS103EW','QS104EW','QS201EW', 'QS116EW'];
+      for (var i = datasets.length - 1; i >= 0; i--) {
+        option1 = document.createElement("option");
+        option1.text = datasets[i];
+        ds1select.add(option1);
+        option2 = document.createElement("option");
+        option2.text = datasets[i];
+        ds2select.add(option2);
+      };
+      update();
+    }
+
+    setup();
 
     function httpGet(theUrl) {
       var xmlHttp = null;
@@ -59,8 +70,8 @@
     }
 
     function update() {
-      ds1id = document.getElementById("dataset1-field").value;
-      ds2id = document.getElementById("dataset2-field").value;
+      ds1id = $("#dataset1-field").val();
+      ds2id = $("#dataset2-field").val();
 
       var dataset1 = JSONstat(generateQueryURL(ds1id, 'K04000001'));
       var dataset2 = JSONstat(generateQueryURL(ds2id, 'K04000001'));
@@ -121,9 +132,16 @@
         areaDS2 = JSONstat(generateQueryURL(ds2id, areas[i]));
         dataPoint.x = areaDS1.Dataset( 0 ).Data( parseInt(ds1SelectedID) ).value;
         dataPoint.y = areaDS2.Dataset( 0 ).Data( parseInt(ds2SelectedID) ).value;
+        dataPoint.loc = 'Unknown'
+        categories = areaDS1.Dataset(0).id;
+        for (var j = categories.length - 1; j >= 0; j--) {
+          if (areaDS1.Dataset(0).Dimension(categories[j]).role == 'geo') {
+            dataPoint.loc = areaDS2.Dataset( 0 ).Dimension( categories[j] ).Category(0).label;
+          }
+        };
+
         dataPoints.push(dataPoint);
       };
-      console.log(dataPoints);
       drawGraph(dataPoints);
     }
 
@@ -152,7 +170,7 @@
         data: [
         {        
           type: "scatter",  
-            toolTipContent: "<span style='\"'color: {color};'\"'><strong>"+ds1dropdown.options[ ds1dropdown.selectedIndex ].value+": </strong></span>{x}<br/><span style='\"'color: {color};'\"'><strong>"+ds2dropdown.options[ ds2dropdown.selectedIndex ].value+": </strong></span>{y}",
+            toolTipContent: "<span style='\"'color: {color};'\"'><strong>{loc}<br/>"+ds1dropdown.options[ ds1dropdown.selectedIndex ].value+": </strong></span>{x}<br/><span style='\"'color: {color};'\"'><strong>"+ds2dropdown.options[ ds2dropdown.selectedIndex ].value+": </strong></span>{y}",
           dataPoints: inputDataPoints
         }]
       });
