@@ -15,10 +15,10 @@
 <link rel="stylesheet" href="keen-dashboards.css">
 
 <style type="text/css">
-.shunt {
-  position: fixed;
-  top: 60px;
-}
+  .shunt {
+    position: fixed;
+    top: 60px;
+  }
 </style>
 
 </head>
@@ -299,15 +299,13 @@
           sum_x2 += x2[i];
           sum_y2 += y2[i];
       }
-    
+
       var step1 = (shortestArrayLength * sum_xy) - (sum_x * sum_y);
       var step2 = (shortestArrayLength * sum_x2) - (sum_x * sum_x);
       var step3 = (shortestArrayLength * sum_y2) - (sum_y * sum_y);
       var step4 = Math.sqrt(step2 * step3);
       var answer = step1 / step4;
-    
       return answer;
-
     }
 
   </script>
