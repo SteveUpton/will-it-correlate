@@ -124,6 +124,41 @@
         dataPoints.push(dataPoint);
       };
       console.log(dataPoints);
+      drawGraph(dataPoints);
+    }
+
+    function drawGraph(inputDataPoints) {
+      ds1dropdown = document.getElementById('dataset1-category');
+      ds2dropdown = document.getElementById('dataset2-category');
+      var chart = new CanvasJS.Chart("chartContainer",
+      {
+        zoomEnabled: true,
+        title:{
+          text: document.getElementById('category1').innerHTML + ' vs ' + document.getElementById('category2').innerHTML,
+          fontSize: 20
+        },
+        axisX: {
+          title: ds1dropdown.options[ ds1dropdown.selectedIndex ].value,
+          labelFontSize: 14,
+          titleFontSize: 18                            
+        },
+        axisY:{
+          title: ds2dropdown.options[ ds2dropdown.selectedIndex ].value,
+          lineThickness: 2,
+          labelFontSize: 14,
+          titleFontSize: 18
+        },
+
+        data: [
+        {        
+          type: "scatter",  
+            toolTipContent: "<span style='\"'color: {color};'\"'><strong>"+ds1dropdown.options[ ds1dropdown.selectedIndex ].value+": </strong></span>{x}<br/><span style='\"'color: {color};'\"'><strong>"+ds2dropdown.options[ ds2dropdown.selectedIndex ].value+": </strong></span>{y}",
+          dataPoints: inputDataPoints
+        }]
+      });
+
+      chart.render();
+
     }
 
   </script>
